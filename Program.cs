@@ -60,6 +60,7 @@ namespace NupkgInfo
             Directory.CreateDirectory(tempDirectory);
             ZipFile.ExtractToDirectory(toolOptions.Path, tempDirectory);
             
+            //Process to call 'tree' for directory tree.
             Process treeProcess = new Process();
             treeProcess.StartInfo.FileName = "cmd.exe";
             treeProcess.StartInfo.Arguments = @"/c " + $"tree {tempDirectory} {fileOption}";
@@ -67,8 +68,9 @@ namespace NupkgInfo
             treeProcess.StartInfo.RedirectStandardOutput = true;
             treeProcess.StartInfo.RedirectStandardError = true;
             treeProcess.StartInfo.UseShellExecute = false;
-            var output = new List<string>();
             treeProcess.Start();
+
+            var output = new List<string>();
             while (!treeProcess.StandardOutput.EndOfStream)
             {
                 output.Add(treeProcess.StandardOutput.ReadLine());
@@ -78,6 +80,7 @@ namespace NupkgInfo
                 output.Add(treeProcess.StandardError.ReadLine());
             }
 
+            //print all output
             foreach (var line in output)
             {
                 Console.WriteLine(line);
@@ -87,7 +90,7 @@ namespace NupkgInfo
 
             //clean temp directory
             Console.WriteLine($"\nDeleting temp directory {tempDirectory}");
-            Directory.Delete(tempDirectory, true);
+            Directory.Delete(tempDirectory, recursive: true);
         }
     }
 }
